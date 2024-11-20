@@ -1,5 +1,7 @@
+import { Criminoso as CriminosoPrisma } from "@prisma/client";
+
 import { prisma } from "../database/prisma.database";
-import { CreateCriminosoDto } from "../dtos";
+import { CreateCriminosoDto, CriminosoDto, QueryFilterDto } from "../dtos";
 import { ResponseApi } from "../types/response.type";
 
 export class CriminosoService {
@@ -52,7 +54,39 @@ export class CriminosoService {
       ok: true,
       code: 201,
       message: "Criminoso cadastrado com sucesso!",
-      data: criminosoCriado,
+      data: this.mapToDto(criminosoCriado),
+    };
+  }
+
+  public async findAll(query: QueryFilterDto): Promise<ResponseApi> {
+    console.log(query);
+
+    // contains = conter
+    // endsWith = terminar
+    // startWith = começar
+    // in = []
+
+    const criminosos = await prisma.criminoso.findMany({
+      where: {
+        nome: { contains: query.nome, mode: "insensitive"},
+        cpf: { contains: query.cpf },
+      },
+    });
+
+    return {
+      ok: true,
+      code: 200,
+      message: "Criminosos buscados com sucesso!",
+      data: criminosos.map((criminoso) => this.mapToDto(criminoso)), // CriminosoDto[]
+    };
+  }
+
+  // Entra como tipo do prisma e sai como meu tipo
+  private mapToDto(criminoso: CriminosoPrisma): CriminosoDto {
+    return {
+      id: criminoso.id_criminoso,
+      nome: criminoso.nome,
+      data_nascimento: criminoso.data_nascimento,
     };
   }
 }

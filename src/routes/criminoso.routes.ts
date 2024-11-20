@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { CriminosoController } from "../controllers/criminoso.controller";
 import { CreateCriminosoMiddlewares } from "../middlewares/create-criminoso-middlewares";
+import { FindAllCriminosoMiddleware } from "../middlewares/find-all-criminoso.middleware";
 
 export class criminosoRoutes {
   public static execute(): Router {
@@ -18,6 +19,14 @@ export class criminosoRoutes {
 
     // ADICIONAR TODAS AS DEMAIS ROTAS
     // GET
+
+    // FIND ALL - GET
+    router.get(
+      "/criminoso",
+      [FindAllCriminosoMiddleware.validateTypes],
+      CriminosoController.findAll
+    );
+
     return router;
   }
 }
