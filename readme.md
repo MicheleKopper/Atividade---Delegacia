@@ -1,8 +1,10 @@
 # Estrutura do projeto
 
-Considerado uma arquitetura modular ou arquitetura em camadas.
+Considerado arquitetura em camadas.
 
-Estrutura de Pastas
+Estrutura de pastas:
+
+```
   /prisma
   ├── /migrations
   └── schema.prisma
@@ -16,6 +18,7 @@ Estrutura de Pastas
   ├── /types
   ├── /dtos
   └── server.ts
+```
 
 ## Explicação
 
