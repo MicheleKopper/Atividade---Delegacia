@@ -1,54 +1,24 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { prisma } from "../database/prisma.database";
+import { CriminosoService } from "../services/criminoso.service";
 
 export class CriminosoController {
-  public static async create(req: Request, res: Response) {
+  public static async create(req: Request, res: Response): Promise<void> {
     const { nome, cpf, data_nascimento, endereco } = req.body;
 
-    // VERIFICA CPF ÚNICO
+    // Chamar o serviço responsável
+    const service = new CriminosoService();
 
-    const cpfExiste = await prisma.criminoso.findUnique({
-      where: { cpf },
+    const result = await service.create({
+      nome: nome,
+      cpf: cpf,
+      data_nascimento: data_nascimento,
+      endereco: endereco,
     });
 
-    if (cpfExiste) {
-      res.status(409).json({
-        ok: false,
-        message: "CPF já está cadastrado!",
-      });
-      return;
-    }
-
-    // 03 - CRIAÇÃO DO 'CRIMINOSO' NO BANCO DE DADOS
-
-    // INSET INTO | VALUES [(""), ("")] = SELECT
-    // create = cria um | retorna dado criado
-    // createMany = cria vários CRIMINOSOS [] | não retorna nada
-    // createManyAndReturn = cria vários CRIMINOSOS [] | retorna os dados criados
-    // Convertendo data_nascimento para Date
-
-    const dataNascimentoDate = new Date(data_nascimento);
-
-    if (isNaN(dataNascimentoDate.getTime())) {
-      res.status(400).json({
-        ok: false,
-        message: "Data de nascimento precisa ser um date!",
-      });
-      return;
-    }
-    const criminosoCriado = await prisma.criminoso.create({
-      data: {
-        nome: nome,
-        cpf: cpf,
-        data_nascimento: dataNascimentoDate,
-        endereco: endereco,
-      },
-    });
-
-    res.status(201).json({
-      ok: true,
-      message: "Criminoso cadastrado com sucesso!",
-      data: criminosoCriado,
-    });
+    // Retornar para o cliente as informações que o serviço retorna
+    // code | ok, message...
+    const { code, ...response } = result;
+    res.status(code).json(response); // {ok, message, data?}
   }
 }
