@@ -20,9 +20,6 @@ app.get("/", (request: Request, response: Response) => {
 // ROTAS
 app.use(criminosoRoutes.execute());
 
-// ADICIONAR AS DEMAIS ROTAS
-// app.use(crimeRoutes.execute());
-// app.use(armaRoutes.execute());
 
 // Iniciar o servidor
 app.listen(process.env.PORTA, () => {
